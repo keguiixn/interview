@@ -42,8 +42,15 @@
       // regexp.lastIndex = 3;
       // alert(regexp.exec(str)); // varName（在位置 4 的单词）
       // alert('$foo %foo foo'.replace(/(?<=\$)foo/g,'bar'))
-      const str = '<title>askhdkahdksah </title> '
-      console.log(str.match(/<title>([\s\S]+)<\/title>/i))    //[<title>askhdkahdksah </title>,askhdkahdksah]
+      // const str = '<title>askhdkahdksah </title> '
+      // console.log(str.match(/<title>([\s\S]+)<\/title>/i))    //[<title>askhdkahdksah </title>,askhdkahdksah]
+      var r = /\{\{(.+?)\}\}/g
+      var txt = '{{ }}1333{{age}}1'
+      const a = txt.replace(r,(a,b,c)=>{
+        console.log(a,b,c)
+        return 12
+      })
+      console.log(a)
 </script>
 <body>
 
