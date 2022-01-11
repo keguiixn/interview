@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+//  function maxSum(arr){
+//    let result = 0;
+//    let current = 0
+//    for(item of arr ){
+//      current+=item;
+//      result=Math.max(result,current)
+//      if(current<0){
+//        current=0
+//      }
+//    }
+//    return result;
+//  }
+//  console.log(maxSum([2,-1,2,3,-9]));
+  // const obj = {a:1,b:2,c:3}
+  // obj[Symbol.iterator]=function(){
+  //   return {
+  //     current: this.a,
+  //     last: this.c,
+  //     next() {
+  //          if(this.current <= this.last){
+  //             return { done: false, value: this.current++ };
+  //          }else{
+  //             return { done: true};
+  //          }
+  //     }
+  //   }
+  // }
+  // for(let item of obj){
+  //   console.log(item);
+  // }
+  // let range = {
+  //     from: 1,
+  //     to: 5
+  //   };
+
+  //   // 1. for..of 调用首先会调用这个：
+  //   range[Symbol.iterator] = function () {
+
+  //     // ……它返回迭代器对象（iterator object）：
+  //     // 2. 接下来，for..of 仅与此迭代器一起工作，要求它提供下一个值
+  //     return {
+  //       current: this.from,
+  //       last: this.to,
+
+  //       // 3. next() 在 for..of 的每一轮循环迭代中被调用
+  //       next() {
+  //         // 4. 它将会返回 {done:.., value :...} 格式的对象
+  //         if (this.current <= this.last) {
+  //           return { done: false, value: this.current++ };
+  //         } else {
+  //           return { done: true };
+  //         }
+  //       }
+  //     };
+  //   };
+
+  //   // 现在它可以运行了！
+  //   for (let num of range) {
+  //     console.log(num); // 1, 然后是 2, 3, 4, 5
+  //   }
+
+
+  // const map = new Map()
+  // map.set(1,1)
+  // map.set(true,2)
+  // map.forEach((value,key,map)=>{
+  //   console.log(`${value}--${key}`);
+  // })
+  // console.log(Array.from(map.keys()));
+  // console.log(map.values());
+  // console.log(map.entries());
+  // console.log(Object.fromEntries(map.entries()));
+
+
+  // const arr = ['123','21313']
+  // const [first,second] = arr
+  // console.log(first);
+  // let user = {};
+  // [user.name, user.surname] = "Ilya Kantor".split(' ');
+  // console.log(user);
+
+  // const obj = {size:{width:100,height:200},items:[1,23],title:'abc'}
+  // const { size:{ width:b, height}, items:[f,g], title='cbd'}=obj
+  // console.log(items);
+
+  
+  // function fun1(){
+  //   var a = 1 ;
+  //   console.log(a);
+  //   function add(){
+  //     console.log(a);
+  //    ++a ;
+  //    alert(a)
+  //   }
+  //   return {b:a,c:add}
+  // }
+  // var a =fun1();
+  // a.c()
+  // a.c()
+  // a.c()
+
+
+  // let salaries = {
+  //   "John": 100,
+  //   "Pete": 300,
+  //   "Mary": 250
+  // };
+  // function topSalary(salaries){
+  //   let max = 0;
+  //   let maxName = null;
+  //   for(let [name,value] of Object.entries(salaries)){
+  //     if(max<value){
+  //       max=value;
+  //       maxName=name;
+  //     }
+  //   }
+  //   return maxName
+  // }
+  // console.log(topSalary(salaries));
+  // alert(({name:1}).toString())
+//   const say = function(){
+//     console.log(1);
+//   } 
+
+//  alert(say.name)
+
+// function test(){
+//   return function add (){
+//     return num++
+//   }
+//   add.num=0
+// }
+// let add =test()
+//   add.num = 10
+//   add()
+
+// alert(add.num)
+// function add(a){
+//   alert(a)
+// }
+  // setInterval(()=>alert('2'),2000)
+
+  // function printNumbers(from,to){
+  //   let current = from ;
+  //   let timeId= setInterval(() => {
+  //     alert(current);
+  //     if(current === to ){
+  //       clearInterval(timeId)
+  //     }
+  //     current++
+  //   }, 1000);
+  // }
+  // function printNumbers(from, to) {
+  //   let current = from 
+  //   setTimeout(function run(){
+  //     alert(current)
+  //     timeId= setTimeout(run,1000)
+  //     if (current === to) {
+  //       clearTimeout(timeId)
+  //     }
+  //     current++
+  //   },1000)
+  // }
+  // printNumbers(5,10)
+  // function slow(x){
+  //   return x
+  // }
+
+  // function decorator (func){
+  //   let map = new Map()
+  //   return function(x){
+  //     if(map.has(x)){
+  //       return map.get(x)
+  //     }
+  //     map.set(x,func(x))
+  //     return func(x)
+  //   }
+  // }
+  // let user = {
+  //   name:'john',
+  //   sayHi(first,second){
+  //     alert(`Hi,${this.name}${first}${second}`)
+  //   }
+  // }
+  // let say = user.sayHi
+  // setTimeout(()=>{
+  //   user.sayHi()
+  // },100)
+  // function curry(func,...args){
+  //   return function (...arg){
+  //     return func.call(this,...args,...arg)
+  //   }
+  // }
+  // const fun = curry(user.sayHi,29)
+  // fun('.')
+  // function f() {
+  //     alert(this.name);
+  //   }
+
+  //   f.test=1
+  //   let bound = f.bind({name:'pig'})
+
+  //  alert(bound===f)
+
+  // function askPassword(ok, fail) {
+  //     let password = prompt("Password?", '');
+  //     if (password == "rockstar") ok();
+  //     else fail();
+  //   }
+
+    const  user = {
+      name: 'John',
+
+     login(result) {
+        alert(this.name + (result ? ' logged in' : ' failed to log in'));
+      }
+
+    };
+    
+  //   askPassword(user.login.bind(user,true),user.login.bind(user, false));
+// Object.defineProperty(user,'name',{ writable :false,configurable:true,enumerable:false})
+// user.name='pig2' // 不会报错，但执行不会成功
+// Object.defineProperty(user, 'name', { writable: true, configurable: true , enumerable: true})
+// console.log(Object.getOwnPropertyDescriptor(user,'name'));
+// Object.defineProperty(user,'age',{
+//   value:11,
+//   writable:true,
+//   configurable: true, 
+//   enumerable: true
+// })
+// console.log(user.age);
+// user.age=134
+// console.log(user.age);
+// const obj = {
+//   name:'sss',
+
+//   get Fullname(){
+//     return this.name
+//   },
+//   set Fullname(value){
+//     this.name = value;
+//   }
+// }
+// console.log(obj.name);
+// obj.Fullname='1231231'
+// obj.name='112313131asdasdsa'
+// console.log(obj.Fullname);
+
+function Person(name){
+  this.name=name
+}
+const a = new Person('sss')
+const b = Object.create(Object.getPrototypeOf(a),Object.getOwnPropertyDescriptors(a));
+</script>
+<body>
+  
+</body>
+</html>

@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+// 2.3 Promise 解决过程
+
+// Promise 解决过程 是一个抽象的操作，其需输入一个 promise 和一个值，我们表示为 [[Resolve]](promise, x)，如果 x 有 then 方法且看上去像一个 Promise ，解决程序即尝试使 promise 接受 
+// x 的状态；否则其用 x 的值来执行 promise 。
+
+// 这种 thenable 的特性使得 Promise 的实现更具有通用性：只要其暴露出一个遵循 Promises/A+ 协议的 then 方法即可；这同时也使遵循 Promises/A+ 规范的实现可以与那些不太规范但可用的实现能良好共存。
+
+// 运行 [[Resolve]](promise, x) 需遵循以下步骤：
+
+// ▪ 2.3.1 x 与 promise 相等
+
+// 如果 promise 和 x 指向同一对象，以 TypeError 为据因拒绝执行 promise
+
+// ▪ 2.3.2 x 为 Promise
+
+// 如果 x 为 Promise ，则使 promise 接受 x 的状态
+
+// 2.3.2.1 如果 x 处于等待态， promise 需保持为等待态直至 x 被执行或拒绝
+// 2.3.2.2 如果 x 处于执行态，用相同的值执行 promise
+// 2.3.2.3 如果 x 处于拒绝态，用相同的据因拒绝 promise
+// ▪ 2.3.3 x 为对象或函数
+
+// 如果 x 为对象或者函数：
+
+// 2.3.3.1 把 x.then 赋值给 then
+
+// 2.3.3.2 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise
+
+// 2.3.3.3 如果 then 是函数，将 x 作为函数的作用域 this 调用之。传递两个回调函数作为参数，第一个参数叫做 resolvePromise ，第二个参数叫做 rejectPromise:
+
+// 2.3.3.3.4.1 如果 resolvePromise 或 rejectPromise 已经被调用，则忽略之
+// 2.3.3.3.4.2 否则以 e 为据因拒绝 promise
+// 2.3.3.3.1 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)
+
+// 2.3.3.3.2 如果 rejectPromise 以据因 r 为参数被调用，则以据因 r 拒绝 promise
+
+// 2.3.3.3.3 如果 resolvePromise 和 rejectPromise 均被调用，或者被同一参数调用了多次，则优先采用首次调用并忽略剩下的调用
+
+// 2.3.3.3.4 如果调用 then 方法抛出了异常 e：
+
+// 2.3.3.4 如果 then 不是函数，以 x 为参数执行 promise
+
+// ▪ 2.3.4 如果 x 不为对象或者函数，以 x 为参数执行 promise
+
+// 如果一个 promise 被一个循环的 thenable 链中的对象解决，而 [[Resolve]](promise, thenable) 的递归性质又使得其被再次调用，根据上述的算法将会陷入无限递归之中。算法虽不强制要求，
+// 但也鼓励施者检测这样的递归是否存在，若检测到存在则以一个可识别的 TypeError 为据因来拒绝 promise。
+  // 手写Promise的时候，有一个难点就在于有很多地方需要和原生一样严谨，也就是说原生的Promise会考虑很多特殊情况
+  /**
+ * 在 myPromise.js 基础上，根据规范实现了 Promise 的全部方法：
+ * - Promise.resolve()
+ * - Promise.reject()
+ * - Promise.prototype.catch()
+ * - Promise.prototype.finally()
+ * - Promise.all()
+ * - Promise.allSettled()
+ * - Promise.any()
+ * - Promise.race()
+ */
+  class myPromise{
+    static PENDING = 'pending';
+    static FULFILLED = 'fulfilled'
+    static REJECTED  = 'rejected'
+    constructor(func){
+      this.PromiseState = myPromise.PENDING
+      this.PromiseResult = null
+      // 由于promise是链式调用，所以采用数组保存
+      this.onFulfilledCallbacks = []; // 保存成功回调函数
+      this.onRejectedCallbacks = []; // 保存失败回调函数
+      // 防止this 指向出错 ,可用箭头，bind,proxy
+      // 在构造函数 constructor里面try...catch，判断生成实例的时候是否有报错 
+      // let promise1 = new myPromise((resolve, reject) => {
+      //     throw new Error('白嫖不成功');
+      // })
+      try{
+        func(this.resolve.bind(this),this.reject.bind(this))
+      }catch(error){
+        this.reject(error);
+      }
+      
+    }
+    resolve(result){
+      // 如果将定时器放在if外面，会增加许多无用的定时器，使用一次resolve或reject 都增加一次，这样减少了许多开销
+      if(this.PromiseState === myPromise.PENDING){
+        // resovle和reject 需要在事件循环末尾执行
+        setTimeout(()=>{
+          this.PromiseState = myPromise.FULFILLED
+          this.PromiseResult = result
+          // 回调函数在promise状态改变之后执行
+          this.onFulfilledCallbacks.forEach(callback => {
+            callback(result)
+          })
+        })
+      }
+    }
+    reject(reason){
+      if(this.PromiseState === myPromise.PENDING){
+        setTimeout(()=>{
+          this.PromiseState = myPromise.REJECTED
+          this.PromiseResult = reason
+          this.onRejectedCallbacks.forEach(callback => {
+            callback(reason)
+          })
+        })
+      }
+    }
+    // Promise 规范如果 onFulfilled 和 onRejected 不是函数，就忽略他们，所谓“忽略”并不是什么都不干，
+    // 对于onFulfilled来说“忽略”就是将value原封不动的返回，对于onRejected来说就是返回reason，onRejected因为是错误分支，我们返回reason应该throw一个Error:
+    then(onFulfilled,onRejected){
+      // 参数校验 ，参数不是函数则返回原值
+      onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+      onRejected = typeof onRejected === 'function' ? onRejected : reason => {
+        throw reason;
+      };
+      // resolve 被包在异步宏任务里，then方法还处于pengding状态,无法执行
+      // if(this.PromiseState === myPromise.PENDING){
+      //   this.onFulfilledCallbacks.push(onFulfilled)
+      //   this.onRejectedCallbacks.push(onRejected)
+      // }
+      // if(this.PromiseState === myPromise.FULFILLED){
+      //   setTimeout(()=>{
+      //     onFulfilled(this.PromiseResult)
+      //   })
+      // }
+      // if(this.PromiseState === myPromise.REJECTED){
+      //   setTimeout(()=>{
+      //     onRejected(this.PromiseResult)
+      //   })
+      // }
+
+      // then 内应该返回一个promise 对象以实现链式调用
+      const promise2 = new myPromise((resolve, reject) => {
+            if (this.PromiseState === myPromise.FULFILLED) {
+                setTimeout(() => {
+                   try {
+                        let x = onFulfilled(this.PromiseResult);
+                        resolvePromise(promise2, x, resolve, reject);
+                   } catch (e) {
+                       reject(e); // 捕获前面onFulfilled中抛出的异常
+                   }
+                });
+            } else if (this.PromiseState === myPromise.REJECTED) {
+                setTimeout(() => {
+                   try {
+                        let x = onRejected(this.PromiseResult);
+                        resolvePromise(promise2, x, resolve, reject);
+                   } catch (e) {
+                       reject(e)
+                   }
+                });
+            } else if (this.PromiseState === myPromise.PENDING) {
+              this.onFulfilledCallbacks.push(() => {
+                   setTimeout(() => {
+                       try {
+                           let x = this.onFulfilled(this.PromiseResult);
+                           resolvePromise(promise2, x, resolve, reject)
+                       } catch (e) {
+                           reject(e);
+                      }
+                   });
+                });
+                this.onRejectedCallbacks.push(() => {
+                   setTimeout(() => {
+                       try {
+                           let x = onRejected(this.PromiseResult);
+                           resolvePromise(promise2, x, resolve, reject);
+                       } catch (e) {
+                           reject(e);
+                       }
+                   });
+                });
+            }
+        })
+
+        return promise2
+    }
+    /**
+     * Promise.resolve()
+     * @param {[type]} value 要解析为 Promise 对象的值 
+     */
+   static resolve(value) {
+       // 如果这个值是一个 promise ，那么将返回这个 promise 
+       if (value instanceof myPromise) {
+           return value;
+       } else if (value instanceof Object && 'then' in value) {
+           // 如果这个值是thenable（即带有`"then" `方法），返回的promise会“跟随”这个thenable的对象，采用它的最终状态；
+           return new myPromise((resolve, reject) => {
+               value.then(resolve, reject);
+           })
+       }
+
+       // 否则返回的promise将以此值完成，即以此值执行`resolve()`方法 (状态为fulfilled)
+       return new myPromise((resolve) => {
+           resolve(value)
+       })
+   }
+    static reject(reason) {
+      return new myPromise((resolve, reject) => {
+        reject(reason);
+      })
+    }
+    // Promise.prototype.catch()方法是.then(null, rejection)或.then(undefined, rejection)的别名，用于指定发生错误时的回调函数,建议调用.catch 可以捕获then 里面的错误
+    catch (onRejected) {
+      return this.then(undefined, onRejected)
+    }
+
+    /**
+     * finally
+     * @param {*} callBack 无论结果是fulfilled或者是rejected，都会执行的回调函数
+     * @returns 
+     */
+    finally(callBack) {
+      return this.then(callBack, callBack)
+    }
+    /**
+     * Promise.all
+     * @param {iterable} promises 一个promise的iterable类型（注：Array，Map，Set都属于ES6的iterable类型）的输入
+     * @returns 
+     */
+   static all(promises) {
+       return new myPromise((resolve, reject) => {
+           // 参数校验
+           if (Array.isArray(promises)) {
+               let result = []; // 存储结果
+               let count = 0; // 计数器
+
+               // 如果传入的参数是一个空的可迭代对象，则返回一个已完成（already resolved）状态的 Promise
+               if (promises.length === 0) {
+                   return resolve(promises);
+               }
+               promises.forEach((item, index) => {
+                   //  判断参数是否为promise
+                   if (item instanceof myPromise) {
+                       myPromise.resolve(item).then(
+                           value => {
+                               count++;
+                               // 每个promise执行的结果存储在result中
+                               result[index] = value;
+                               // Promise.all 等待所有都完成（或第一个失败）
+                               count === promises.length && resolve(result);
+                           },
+                           reason => {
+                               /**
+                                * 如果传入的 promise 中有一个失败（rejected），
+                                * Promise.all 异步地将失败的那个结果给失败状态的回调函数，而不管其它 promise 是否完成
+                                */
+                               reject(reason);
+                           }
+                       )
+                   } else {
+                       // 参数里中非Promise值，原样返回在数组里
+                       count++;
+                       result[index] = item;
+                       count === promises.length && resolve(result);
+                   }
+               })
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+   }
+   static allSettled(promises) {
+       return new myPromise((resolve, reject) => {
+           // 参数校验
+           if (Array.isArray(promises)) {
+               let result = []; // 存储结果
+               let count = 0; // 计数器
+
+               // 如果传入的是一个空数组，那么就直接返回一个resolved的空数组promise对象
+               if (promises.length === 0) return resolve(promises);
+
+               promises.forEach((item, index) => {
+                   // 非promise值，通过Promise.resolve转换为promise进行统一处理
+                   myPromise.resolve(item).then(
+                       value => {
+                           count++;
+                           // 对于每个结果对象，都有一个 status 字符串。如果它的值为 fulfilled，则结果对象上存在一个 value 。
+                           result[index] = {
+                               status: 'fulfilled',
+                               value
+                           }
+                           // 所有给定的promise都已经fulfilled或rejected后,返回这个promise
+                           count === promises.length && resolve(result);
+                       },
+                       reason => {
+                           count++;
+                           /**
+                            * 对于每个结果对象，都有一个 status 字符串。如果值为 rejected，则存在一个 reason 。
+                            * value（或 reason ）反映了每个 promise 决议（或拒绝）的值。
+                            */
+                           result[index] = {
+                               status: 'rejected',
+                               reason
+                           }
+                           // 所有给定的promise都已经fulfilled或rejected后,返回这个promise
+                           count === promises.length && resolve(result);
+                       }
+                   )
+               })
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+   }
+   static any(promises) {
+       return new myPromise((resolve, reject) => {
+           // 参数校验
+           if (Array.isArray(promises)) {
+               let errors = []; // 
+               let count = 0; // 计数器
+
+               // 如果传入的参数是一个空的可迭代对象，则返回一个 已失败（already rejected） 状态的 Promise。
+               if (promises.length === 0) return reject(new AggregateError('All promises were rejected'));
+
+               promises.forEach(item => {
+                   // 非Promise值，通过Promise.resolve转换为Promise
+                   myPromise.resolve(item).then(
+                       value => {
+                           // 只要其中的一个 promise 成功，就返回那个已经成功的 promise 
+                           resolve(value);
+                       },
+                       reason => {
+                           cout++;
+                           errors.push(reason);
+                           /**
+                            * 如果可迭代对象中没有一个 promise 成功，就返回一个失败的 promise 和AggregateError类型的实例，
+                            * AggregateError是 Error 的一个子类，用于把单一的错误集合在一起。
+                            */
+                           cout === promises.length && reject(new AggregateError(errors));
+                       }
+                   )
+               })
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+    }
+    static race(promises) {
+       return new myPromise((resolve, reject) => {
+           // 参数校验
+           if (Array.isArray(promises)) {
+               // 如果传入的迭代promises是空的，则返回的 promise 将永远等待。
+               if (promises.length > 0) {
+                   promises.forEach(item => {
+                       /**
+                        * 如果迭代包含一个或多个非承诺值和/或已解决/拒绝的承诺，
+                        * 则 Promise.race 将解析为迭代中找到的第一个值。
+                        */
+                       myPromise.resolve(item).then(resolve, reject);
+                   })
+               }
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+   }
+  }
+
+// 这个resolvePromise(promise2, x, resolve, reject) 即 Promise 解决过程：[[Resolve]](promise2, x) 就是对resolve()、reject() 进行改造增强， 针对resolve()
+// 和reject()中不同值情况 进行处理。
+
+// resolve()和reject() 返回的 x 值的几种情况：
+
+// 普通值
+// Promise对象
+// thenable对象/函数
+/**
+ * 对resolve()、reject() 进行改造增强 针对resolve()和reject()中不同值情况 进行处理
+ * @param  {promise} promise2 promise1.then方法返回的新的promise对象
+ * @param  {[type]} x         promise1中onFulfilled或onRejected的返回值
+ * @param  {[type]} resolve   promise2的resolve方法
+ * @param  {[type]} reject    promise2的reject方法
+ */
+function resolvePromise(promise2, x, resolve, reject) {
+  if (x === promise2) {
+    return reject(new TypeError('Chaining cycle detected for promise'));
+  }
+  // 例如这种情况
+  //   const promise = new Promise((resolve, reject) => {
+  //   resolve(100)
+  // })
+  // const p1 = promise.then(value => {
+  //   console.log(value)
+  //   return p1
+  // })
+  // 2.3.2 如果 x 为 Promise ，则使 promise2 接受 x 的状态
+   if (x instanceof myPromise) {
+       if (x.PromiseState === myPromise.PENDING) {
+           /**
+            * 2.3.2.1 如果 x 处于等待态， promise 需保持为等待态直至 x 被执行或拒绝
+            *         注意"直至 x 被执行或拒绝"这句话，
+            *         这句话的意思是：x 被执行x，如果执行的时候拿到一个y，还要继续解析y
+            */
+           x.then(y => {
+               resolvePromise(promise2, y, resolve, reject)
+           }, reject);
+       } else if (x.PromiseState === myPromise.FULFILLED) {
+           // 2.3.2.2 如果 x 处于执行态，用相同的值执行 promise
+           resolve(x.PromiseResult);
+       } else if (x.PromiseState === myPromise.REJECTED) {
+           // 2.3.2.3 如果 x 处于拒绝态，用相同的据因拒绝 promise
+           reject(x.PromiseResult);
+       }
+   }else if (x !== null && ((typeof x === 'object' || (typeof x === 'function')))) {
+       // 2.3.3 如果 x 为对象或函数
+       try {
+           // 2.3.3.1 把 x.then 赋值给 then
+           var then = x.then;
+       } catch (e) {
+           // 2.3.3.2 如果取 x.then 的值时抛出错误 e ，则以 e 为据因拒绝 promise
+           return reject(e);
+       }
+
+       /**
+        * 2.3.3.3 
+        * 如果 then 是函数，将 x 作为函数的作用域 this 调用之。
+        * 传递两个回调函数作为参数，
+        * 第一个参数叫做 `resolvePromise` ，第二个参数叫做 `rejectPromise`
+        */
+       if (typeof then === 'function') {
+           // 2.3.3.3.3 如果 resolvePromise 和 rejectPromise 均被调用，或者被同一参数调用了多次，则优先采用首次调用并忽略剩下的调用
+           let called = false; // 避免多次调用
+           try {
+               then.call(
+                   x,
+                   // 2.3.3.3.1 如果 resolvePromise 以值 y 为参数被调用，则运行 [[Resolve]](promise, y)
+                   y => {
+                       if (called) return;
+                       called = true;
+                       resolvePromise(promise2, y, resolve, reject);
+                   },
+                   // 2.3.3.3.2 如果 rejectPromise 以据因 r 为参数被调用，则以据因 r 拒绝 promise
+                   r => {
+                       if (called) return;
+                       called = true;
+                       reject(r);
+                   }
+               )
+           } catch (e) {
+               /**
+                * 2.3.3.3.4 如果调用 then 方法抛出了异常 e
+                * 2.3.3.3.4.1 如果 resolvePromise 或 rejectPromise 已经被调用，则忽略之
+                */
+               if (called) return;
+               called = true;
+
+               /**
+                * 2.3.3.3.4.2 否则以 e 为据因拒绝 promise
+                */
+               reject(e);
+           }
+       } else {
+           // 2.3.3.4 如果 then 不是函数，以 x 为参数执行 promise
+           resolve(x);
+       }
+   } else {
+       // 2.3.4 如果 x 不为对象或者函数，以 x 为参数执行 promise
+       return resolve(x);
+   }
+}
+  // console.log(1)
+  // let promise1 = new myPromise((resolve, reject) => {
+  //   console.log(2)
+  //   setTimeout(() => {
+  //     // resolve 总是在本轮末尾执行
+  //     resolve('这次一定');
+  //     console.log(4);
+  //  })
+  // })
+  // promise1.then(
+  //   (result)=>{
+  //     console.log(result)
+  //   },
+  //   (reason)=>{
+  //     console.log(reason)
+  //   })
+  // promise1.then(
+  //   (result)=>{
+  //     console.log(result)
+  //   },
+  //   (reason)=>{
+  //     console.log(reason)
+  //   })
+  // promise1.then(
+  //   (result)=>{
+  //     console.log(result)
+  //   },
+  //   (reason)=>{
+  //     console.log(reason)
+  //   })
+  // console.log(3)
+
+  let p1 = new myPromise((resolve, reject) => {
+    resolve(10)
+  })
+  p1.then(res => {
+      console.log('fulfilled', res);
+      return 2 * res
+  }).then(res => {
+      console.log('fulfilled', res)
+  }) 
+</script>
+<body>
+  
+</body>
+</html>

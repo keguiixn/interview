@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script>
+    // const current = {
+    //   A:'a',
+    //   B:'b'
+    // }
+    // const target = new Proxy(current,{
+    //   get(target,property){
+    //     if(property in target ){
+    //       return target[property]
+    //     }else{
+    //       return property;
+    //     }
+    //   },
+    //   set(target,property,value){
+    //     target[property]=value+'s'
+    //     return Reflect.set(...arguments)
+    //   },
+    //   defineProperty(target,name,des){
+    //     console.log(1)
+    //     Reflect.defineProperty(...arguments)
+    //   }
+    // })
+    // target.C = 'c'
+    // alert(target.C)
+    // function makeObservable(target) {
+    //   target['handles'] = []
+    //   target.observe = function(handler){
+    //     this['handles'].push(handler)
+    //   }
+    //     /* 你的代码 */
+    //     return new Proxy(target,{
+    //       set(target,prop,value,receiver){
+    //         let success =  Reflect.set(...arguments)
+    //         console.log(success)
+    //         if(success){
+    //           target['handles'].forEach(element => {
+    //             element(prop,value)
+    //           });
+    //         }
+    //         return success
+    //       }, 
+    //     })
+    //   }
+
+    //   let user = {};
+    //   user = makeObservable(user);
+
+    //   user.observe((key, value) => {
+    //     alert(`SET ${key}=${value}`);
+    //   });
+
+    //   user.name = "John"; // alerts: SET name=John
+  </script>
+</head>
+<body>
+  <div>2</div>
+</body>
+</html>

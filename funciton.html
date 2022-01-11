@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  // function abc({x,y}={x:0,y:0}){
+  //   console.log(x,y)
+  // }
+  // abc({})
+  // var s2 =0 
+  // function Timer (){
+  //   this.s2 =0 
+  //   setInterval(function(){
+  //     this.s2++
+  //   },1000)
+  // }
+  // var timer = new Timer()
+  // setTimeout(()=>console.log(this.s2),3100)
+  function foo (){
+    console.log(arguments)
+    setTimeout(()=>{
+      console.log(arguments)
+    },100)
+  }
+  foo(2,4,5,7)
+</script>
+<body>
+  
+</body>
+</html>

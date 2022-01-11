@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script defer>
+  console.log(document.documentElement)
+  
+  console.log(document.head)
+  
+
+  // 原生js没有提供此方法
+  document.ready = function(){
+    console.log(document.body)
+  }
+  //  window.onload = function () {
+  //     console.log(document.body)
+  //   }
+</script>
+<style>
+  .alert {
+  padding: 15px;
+  border: 1px solid #d6e9c6;
+  border-radius: 4px;
+  color: #3c763d;
+  background-color: #dff0d8;
+}
+</style>
+<body>
+  <!-- <div a="11">0</div>
+  <div id='test' data-test="1">1</div>
+  <div  show-info="name"></div>
+  <div  show-info="age"></div>
+  <a name="list">the list</a>
+  <ul>
+    <li><a href="http://google.com">http://google.com</a></li>
+    <li><a href="/tutorial">/tutorial.html</a></li>
+    <li><a href="local/path">local/path</a></li>
+    <li><a href="ftp://ftp.com/my.zip">ftp://ftp.com/my.zip</a></li>
+    <li><a href="http://nodejs.org">http://nodejs.org</a></li>
+    <li><a href="http://internal.com/test">http://internal.com/test</a></li>
+  </ul> -->
+  <div>
+    <!-- <a href="#">23423</a> -->
+    <!-- <ul id="test" style="display: inline;list-style-type: none;width:300px;overflow: hidden;background-color: #008c8c;">
+      <li style="width:100px">1</li>
+      <li style="width:100px">2</li>
+      <li style="width:100px">3</li>
+      <li style="width:100px">4</li>
+      <li style="width:100px">5</li>
+      <li style="width:100px" >6</li>
+    </ul> -->
+    <h1 contentEditable id="elem">Hello from the script!</h1>
+  </div>
+ <script>
+        // const test = document.getElementById('test')
+        // test.style.background = 'red'
+        // console.log(test.dataset)
+        // let user = {
+        //   name:'Jhon',
+        //   age: 12
+        // }
+        // for ( let div of document.querySelectorAll('[show-info]')){
+        //   let field = div.getAttribute('show-info')
+        //   div.innerHTML = user[field]
+        // }
+        // for (let link of document.querySelectorAll('a')){
+        //   let href = link.getAttribute('href')
+        //   if(!href) continue;
+        //   if(!href.includes('://')) continue;
+        //   if(href.startsWith('http://internal.com')) continue;
+        //   link.style.color="orange"
+        // }
+        // const div = document.createElement('div')
+        // div.className='alert'
+        // const strong = document.createElement('strong')
+        // strong.innerHTML = 'Hi there ! '
+        // const TextNode =  document.createTextNode("You've read an important message.") 
+        // div.append(strong)
+        // // 文本字符串被自动替换成文本节点
+        // div.append(TextNode)
+        // document.body.append(div)
+        // document.write('<h1>2133</h1>')
+        // setTimeout(()=>{
+        //   test.style.marginLeft= '20px' 
+        // },1000)
+        // 在 document 上捕获...
+          elem.addEventListener("hello", function (event) { // (1)
+            alert("Hello from " + event.target.tagName); // Hello from H1
+          });
+
+          // ...在 elem 上 dispatch！
+          let event = new Event("hello", { bubbles: true }); // (2)
+          elem.dispatchEvent(event);
+
+  // 在 document 上的处理程序将被激活，并显示消息。
+ </script>
+ <div>2</div>
+</body>
+</html>

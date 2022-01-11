@@ -1,0 +1,7 @@
+{
+  "$count": "true",
+  "$orderby": "BillCode desc,BillDate",
+  "$select": "BillCode,GatheringParentCode,BillDate,BillTypeCode,DeliveryWarehouseCode,DocumentStatus,OperationStatus,IsCancelled,PushDownStatus,TotalVolume,TotalPackage,TotalOrderCount,DetailRowsCount,DeliveryPointCode,ThreeServicePointCode,ContractorCode,LineAreaCode,ThreeServiceSupplierCode,PushDownTime,CustomerSalesman,Memo,Id",
+  "$expand": "BillType,DeliveryWarehouse,DeliveryPoint,ThreeServicePoint,Contractor,LineArea,ThreeServiceSupplier",
+  "$top": 50
+}

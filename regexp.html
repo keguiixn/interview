@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  // const reg = new RegExp('C\DB','g')
+  // const str = 'C\nB'
+  // alert(str.match(reg))
+  // let reg = /html|php|css|java(script)?/gi;
+
+  //   let str = "First HTML appeared, then CSS, then JavaScript";
+
+  //   alert(str.match(reg));
+  
+  // let str = 'Hello,world!';
+
+  //   let regexp = /\w+/g;
+  //   regexp.lastIndex = 7; // 在位置 5 精确查找
+
+  //   alert(regexp.exec(str)); // null
+
+    // let str = 'let varName = "value"';
+
+    //   let regexp = /\w+/y;
+
+    //   regexp.lastIndex = 3;
+    //   alert(regexp.exec(str)); // null（位置 3 有一个空格，不是单词）
+
+    //   regexp.lastIndex = 4;
+    //   alert(regexp.exec(str)); // varName（在位置 4 的单词）
+      // let str = 'xaya';
+
+      // let regexp = /a/g;
+
+      // regexp.lastIndex = 2;
+      // alert(regexp.exec(str)); // null（位置 3 有一个空格，不是单词）
+
+      // regexp.lastIndex = 3;
+      // alert(regexp.exec(str)); // varName（在位置 4 的单词）
+      // alert('$foo %foo foo'.replace(/(?<=\$)foo/g,'bar'))
+      const str = '<title>askhdkahdksah </title> '
+      console.log(str.match(/<title>([\s\S]+)<\/title>/i))    //[<title>askhdkahdksah </title>,askhdkahdksah]
+</script>
+<body>
+
+</body>
+</html>

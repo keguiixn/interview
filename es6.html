@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+
+  // console.log()
+
+// for(var i =1 ;i<6;i++){
+//   console.log(i)
+// }
+// console.log(i)
+
+// function f1(){
+//   let n =5;
+//   if(true){
+//      let a =10 
+//   }
+//   console.log(n)
+// }
+// f1()
+
+//   window.a = 1
+// alert(globalThis.a)
+// var {message:msg='hello'}={ message:'a'}
+// alert(msg)
+// const obj ={a:1,b:2}
+// obj.toString=function (){
+//   return JSON.stringify(this)
+// }
+// alert(`${obj}`)
+const total =30 
+function passthru (literals,...values){
+  console.log(literals)
+  var output = ""
+  for(var index =0;index<values.length;index++){
+    output += literals.raw[index]+values[index]
+  }
+  output+=literals.raw[index]
+  return output
+}
+const msg = passthru`The total is ${total} (${total*1.05} with tax)`
+alert(msg)
+// alert('&'.replace(/&/g,'%amp;')) 
+</script>
+<body>
+  
+</body>
+</html>

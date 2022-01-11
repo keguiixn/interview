@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  const obj1 ={
+    set foo(x){
+
+    },
+    get foo(){
+
+    }
+    // b:2
+  }
+  // console.log(Object.getOwnPropertyDescriptor(obj,'foo'))
+  // console.log(Object.getOwnPropertyDescriptor(obj,'foo').get.name)
+  // let s = Symbol('a')
+  // console.log(s.toString())
+  // console.log(Reflect.ownKeys(Object.prototype))
+  // const obj = {
+  //   a:1,
+  //   __proto__:obj1
+  // }
+  // for ( i in obj){
+  //   console.log(i)
+  // }
+  // console.log(Reflect.ownKeys(obj))
+  // function Person(){
+  //   this.address='zhangsan'
+  // }
+  // function Child(){
+  //   this.age =1 
+  // }
+  // const ap = new Child()
+  // ap.__proto__=new Person()
+  // console.log(Child.prototype)
+  // class Point {
+  //   constructor(){
+  //     this.a=1
+  //   }
+  // }
+  // class cp extends Point{
+  //   constructor(){
+  //     super()
+  //   }
+  // }
+  
+  // const p = new cp()
+  // console.log(cp.prototype.__proto__===Point.prototype)
+  // console.log(cp.__proto__===Point)
+  // console.log(p.__proto__===cp.prototype)
+  // console.log(p)
+  // console.log(Point.prototype.constructor)
+  // console.log(Object.assign([4,5,6],[1,2]))
+  function clone(origin){
+    const abc = origin.getPrototypeof(origin)
+    return Object.assign(Object.create(abc),origin)
+  }
+  const sym =Symbol('a')
+  const sym1 =Symbol('b')
+  const p ={d:4}
+  const obj = {
+    [sym]:1,
+    a:2,
+    c:3,
+    __proto__:p
+  }
+  Object.defineProperty(obj,sym, {
+      enumerable:false,
+      configurable:true ,
+      value:4,
+      writable:true 
+  })
+  obj[sym1]=5
+  console.log(obj[sym1])
+  console.log(Reflect.ownKeys(obj))
+  console.log(Object.getOwnPropertyNames(obj))
+  console.log(Object.keys(obj))
+  console.log(Object.getOwnPropertySymbols(obj))
+  for(let i in obj){
+    console.log(i)
+  }
+</script>
+<body>
+  
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  // function SaferHtml(temdata){
+  //   var s= temdata[0]
+  //   console.log(temdata)
+  //   console.log(arguments)
+  //   for(var i=1;i<arguments.length;i++){
+  //     var arg = String(arguments[i])
+  //     s+=arg.replace(/&/g,"&amp;")
+  //     .replace(/</g,"&lt;")
+  //     .replace(/>/g,"&gt;")
+  //     s+=temdata[i]
+  //   }
+  //   return s
+  // }
+  // const rend = `<script>123<\/script>`
+  // const msg = SaferHtml`<p> ${rend}has sent you a message </p>`
+
+  // console.log(msg)
+  // console.log(String.raw`hi/\\n ${2+3}`)
+  // console.log(window.isNaN('sss1'))
+  // console.log(Number.isNaN(1))
+  // function f(z,zs,x=1,y){
+  //   return [x,y]
+  // }
+  // console.log(f.length)
+  // Array.prototype.includes = function(search, start) {
+  //   'use strict';
+  //   if (typeof start !== 'number') {
+  //     start = 0;
+  //   }
+    
+  //   if (start + search.length > this.length) {
+  //     return false;
+  //   } else {
+  //     return this.indexOf(search, start) !== -1;
+  //   }
+  // };
+  if (!Array.prototype.includes) {
+	  Object.defineProperty(Array.prototype, 'includes', {
+	    value: function(valueToFind, fromIndex) {
+	
+	      if (this == null) {
+	        throw new TypeError('"this" is null or not defined');
+	      }
+	
+	      // 1. Let O be ? ToObject(this value).
+	      var o = Object(this);
+	
+	      // 2. Let len be ? ToLength(? Get(O, "length")).
+	      var len = o.length >>> 0;
+	
+	      // 3. If len is 0, return false.
+	      if (len === 0) {
+	        return false;
+	      }
+	
+	      // 4. Let n be ? ToInteger(fromIndex).
+	      //    (If fromIndex is undefined, this step produces the value 0.)
+	      var n = fromIndex | 0;
+	
+	      // 5. If n ≥ 0, then
+	      //  a. Let k be n.
+	      // 6. Else n < 0,
+	      //  a. Let k be len + n.
+	      //  b. If k < 0, let k be 0.
+	      var k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+	
+	      function sameValueZero(x, y) {
+	        return x === y || 
+	        (typeof x === 'number' && typeof y === 'number' && isNaN(x) && isNaN(y));
+	      }
+	
+	      // 7. Repeat, while k < len
+	      while (k < len) {
+	        // a. Let elementK be the result of ? Get(O, ! ToString(k)).
+	        // b. If SameValueZero(valueToFind, elementK) is true, return true.
+	        if (sameValueZero(o[k], valueToFind)) {
+	          return true;
+	        }
+	        // c. Increase k by 1.
+	        k++;
+	      }
+	
+	      // 8. Return false
+	      return false;
+	    }
+	  });
+	}
+  console.log([NaN].includes(NaN))
+
+</script>
+<body>
+  <div></div>
+</body>
+</html>

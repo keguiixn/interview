@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  // function* pseudoRandom(seed){
+  //   let value = seed
+  //   while(true){
+  //     value = value * 16807 % 2147483647
+  //     yield value
+  //   }
+  // }
+  // const generators = pseudoRandom(1)
+  // alert(generators.next().value)
+  // alert(generators.next().value)
+  // const obj = {
+  //   from:1,
+  //   to:5,
+  //   // [Symbol.iterator]() {
+  //   //   return {
+  //   //     first: this.from,
+  //   //     last: this.to,
+  //   //     next() {
+  //   //       if (this.first <= this.last) {
+  //   //         return { done: false, value: this.first++ }
+  //   //       } else {
+  //   //         return { done: true }
+  //   //       }
+  //   //     }
+  //   //   }
+  //   // }
+  // }
+  // obj[Symbol.iterator]= function* (){
+  //    for (let i = this.from;i<this.to+1;i++){
+  //      yield i
+  //   }
+  //   // return {
+  //   //   first:this.from,
+  //   //   last:this.to,
+  //   //   next(){
+  //   //     if(this.first<=this.last){
+  //   //       return {done:false,value:this.first++}
+  //   //     }else{
+  //   //       return {done:true}
+  //   //     }
+  //   //   }
+  //   // }
+  // }
+  // console.log(...obj)
+  // for(let i of obj){
+  //   alert(i)
+  // }
+  // Object.defineProperty(obj,)
+//   const it = obj[Symbol.iterator]()
+//   console.log(it.next())
+
+// 遍历完全二叉树
+function Tree(left,label,right){
+  this.left = left
+  this.label = label
+  this.right = right 
+}
+
+function* inorder(t){
+  yield* inorder(t.left)
+  yield t.label
+  yield* inorder(t.right)
+}
+function make(arrayTree){
+  if(arrayTree.length === 1){
+    return new Tree(null,arrayTree[0],null)
+  }
+  return new Tree(make(arrayTree[0]),arrayTree[1],make(arrayTree[2]))
+}
+ </script>
+<body>
+  
+</body>
+</html>

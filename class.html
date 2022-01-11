@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+  // class Person{
+  //   constructor(name){
+  //     this.name = name;
+  //   }
+  //   get name(){
+  //     return this._name;
+  //   }
+  //   set name (value){
+  //     if(value.length>3){
+  //       alert ('名字太长')
+  //     }
+  //     this._name = value
+      
+  //   }
+  //   say=()=>{
+  //     console.log(1)
+  //   }
+  //    run () {
+  //     console.log(1)
+  //   }
+  // }
+  // alert(Object.prototype.toString.call(Person))
+  // Person.prototype.say = () => {
+  //     // alert('我可以跑')
+  //   }
+  // const person = new Person('john')
+  // console.log(person)
+  // person.say()
+  // for (key in person) {
+  //     console.log(typeof key)
+  //   }
+  function Person(name){
+    if(new.target===Person){
+      this.name = name
+    }else{
+      throw new Error('必须使用new生成实例')
+    }
+  }
+  class pe{
+    a=1
+    static b=2
+  }
+  console.log(new pe().a)
+  function decorator(wrapper){
+    return function(){
+      return wrapper.apply(this,arguments)
+    }
+  }
+</script>
+<body>
+  
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<script>
+/**
+ * 在 myPromise.js 基础上，根据规范实现了 Promise 的全部方法：
+ * - Promise.resolve()
+ * - Promise.reject()
+ * - Promise.prototype.catch()
+ * - Promise.prototype.finally()
+ * - Promise.all()
+ * - Promise.allSettled()
+ * - Promise.any()
+ * - Promise.race()
+ */
+  class myPromise{
+    static PENDING = 'pending';
+    static FULFILLED = 'fulfilled'
+    static REJECTED  = 'rejected'
+    constructor(func){
+      this.PromiseState = myPromise.PENDING
+      this.PromiseResult = null
+      this.onFulfilledCallbacks = []; 
+      this.onRejectedCallbacks = []; 
+      try{
+        func(this.resolve.bind(this),this.reject.bind(this))
+      }catch(error){
+        this.reject(error);
+      }
+      
+    }
+    resolve(result){
+      setTimeout(()=>{
+        if(this.PromiseState === myPromise.PENDING){
+          this.PromiseState = myPromise.FULFILLED
+          this.PromiseResult = result
+          this.onFulfilledCallbacks.forEach(callback => {
+            callback(result)
+          })
+        }
+    })
+    }
+    reject(reason){
+      setTimeout(()=>{
+        if(this.PromiseState === myPromise.PENDING){
+          this.PromiseState = myPromise.REJECTED
+          this.PromiseResult = reason
+          this.onRejectedCallbacks.forEach(callback => {
+            callback(reason)
+          }) 
+        }
+    })
+    }
+    then(onFulfilled,onRejected){
+      onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : value => value;
+      onRejected = typeof onRejected === 'function' ? onRejected : reason => {
+        throw reason;
+      };
+      const promise2 = new myPromise((resolve, reject) => {
+            if (this.PromiseState === myPromise.FULFILLED) {
+                setTimeout(() => {
+                   try {
+                        let x = onFulfilled(this.PromiseResult);
+                        resolvePromise(promise2, x, resolve, reject);
+                   } catch (e) {
+                       reject(e);
+                   }
+                });
+            } else if (this.PromiseState === myPromise.REJECTED) {
+                setTimeout(() => {
+                   try {
+                        let x = onRejected(this.PromiseResult);
+                        resolvePromise(promise2, x, resolve, reject);
+                   } catch (e) {
+                       reject(e)
+                   }
+                });
+            } else if (this.PromiseState === myPromise.PENDING) {
+              this.onFulfilledCallbacks.push(() => {
+                   setTimeout(() => {
+                       try {
+                           let x = this.onFulfilled(this.PromiseResult);
+                           resolvePromise(promise2, x, resolve, reject)
+                       } catch (e) {
+                           reject(e);
+                      }
+                   });
+                });
+                this.onRejectedCallbacks.push(() => {
+                   setTimeout(() => {
+                       try {
+                           let x = onRejected(this.PromiseResult);
+                           resolvePromise(promise2, x, resolve, reject);
+                       } catch (e) {
+                           reject(e);
+                       }
+                   });
+                });
+            }
+        })
+        return promise2
+    }
+    /**
+     * Promise.resolve()
+     * @param {[type]} value 要解析为 Promise 对象的值 
+     */
+   static resolve(value) {
+       if (value instanceof myPromise) {
+           return value;
+       } else if (value instanceof Object && 'then' in value) {
+           return new myPromise((resolve, reject) => {
+               value.then(resolve, reject);
+           })
+       }
+
+       return new myPromise((resolve) => {
+           resolve(value)
+       })
+   }
+    static reject(reason) {
+      return new myPromise((resolve, reject) => {
+        reject(reason);
+      })
+    }
+    catch (onRejected) {
+      return this.then(undefined, onRejected)
+    }
+
+    /**
+     * finally
+     * @param {*} callBack 无论结果是fulfilled或者是rejected，都会执行的回调函数
+     * @returns 
+     */
+    finally(callBack) {
+      return this.then(callBack, callBack)
+    }
+    /**
+     * Promise.all
+     * @param {iterable} promises 一个promise的iterable类型（注：Array，Map，Set都属于ES6的iterable类型）的输入
+     * @returns 
+     */
+   static all(promises) {
+       return new myPromise((resolve, reject) => {
+           if (Array.isArray(promises)) {
+               let result = [];
+               let count = 0; 
+               if (promises.length === 0) {
+                   return resolve(promises);
+               }
+               promises.forEach((item, index) => {
+                   if (item instanceof myPromise) {
+                       myPromise.resolve(item).then(
+                           value => {
+                               count++;
+                               result[index] = value;
+                               count === promises.length && resolve(result);
+                           },
+                           reason => {
+                               reject(reason);
+                           }
+                       )
+                   } else {
+                       count++;
+                       result[index] = item;
+                       count === promises.length && resolve(result);
+                   }
+               })
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+   }
+   static allSettled(promises) {
+       return new myPromise((resolve, reject) => {
+           if (Array.isArray(promises)) {
+               let result = []; 
+               let count = 0; 
+               if (promises.length === 0) return resolve(promises);
+
+               promises.forEach((item, index) => {
+                   myPromise.resolve(item).then(
+                       value => {
+                           count++;
+                           result[index] = {
+                               status: 'fulfilled',
+                               value
+                           }
+                           count === promises.length && resolve(result);
+                       },
+                       reason => {
+                           count++;
+                           result[index] = {
+                               status: 'rejected',
+                               reason
+                           }
+                           count === promises.length && resolve(result);
+                       }
+                   )
+               })
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+   }
+  // 只要其中的一个 promise 成功，就返回那个已经成功的 promise
+  // 如果可迭代对象中没有一个 promise 成功（即所有的 promises 都失败/拒绝），就返回一个失败的 promise 和 AggregateError 类型的实例，它是 Error 的一个子类，用于把单一的错误集合在一起
+
+   static any(promises) {
+       return new myPromise((resolve, reject) => {
+           if (Array.isArray(promises)) {
+               let errors = []; 
+               let count = 0; 
+               if (promises.length === 0) return reject(new AggregateError('All promises were rejected'));
+
+               promises.forEach(item => {
+                   myPromise.resolve(item).then(
+                       value => {
+                           resolve(value);
+                       },
+                       reason => {
+                           count++;
+                           errors.push(reason);
+                           count === promises.length && reject(new AggregateError(errors));
+                       }
+                   )
+               })
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+    }
+    // 返回最先出结果的那个promise
+    static race(promises) {
+       return new myPromise((resolve, reject) => {
+           if (Array.isArray(promises)) {
+               if (promises.length > 0) {
+                   promises.forEach(item => {
+                       myPromise.resolve(item).then(resolve, reject);
+                   })
+               }
+           } else {
+               return reject(new TypeError('Argument is not iterable'))
+           }
+       })
+   }
+
+  }
+function resolvePromise(promise2, x, resolve, reject) {
+  if (x === promise2) {
+    return reject(new TypeError('Chaining cycle detected for promise'));
+  }
+   if (x instanceof myPromise) {
+       if (x.PromiseState === myPromise.PENDING) {
+           x.then(y => {
+               resolvePromise(promise2, y, resolve, reject)
+           }, reject);
+       } else if (x.PromiseState === myPromise.FULFILLED) {
+           resolve(x.PromiseResult);
+       } else if (x.PromiseState === myPromise.REJECTED) {
+           reject(x.PromiseResult);
+       }
+   }else if (x !== null && ((typeof x === 'object' || (typeof x === 'function')))) {
+       try {
+           var then = x.then;
+       } catch (e) {
+           return reject(e);
+       }
+       if (typeof then === 'function') {
+           let called = false; 
+           try {
+               then.call(
+                   x,
+                   y => {
+                       if (called) return;
+                       called = true;
+                       resolvePromise(promise2, y, resolve, reject);
+                   },
+                   r => {
+                       if (called) return;
+                       called = true;
+                       reject(r);
+                   }
+               )
+           } catch (e) {
+               if (called) return;
+               called = true;
+               reject(e);
+           }
+       } else {
+           resolve(x);
+       }
+   } else {
+       return resolve(x);
+   }
+}
+console.log(1)
+  const p1  = new myPromise((resolve,reject)=>{
+    resolve(2)
+    reject(4)
+    console.log(3)
+  })
+  
+  p1.then((result)=>{
+    console.log(result)
+  },(reject)=>{
+    console.log(reject)
+  })
+  console.log(5)
+</script>
+<body>
+  
+</body>
+</html>
