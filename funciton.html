@@ -20,13 +20,19 @@
   // }
   // var timer = new Timer()
   // setTimeout(()=>console.log(this.s2),3100)
-  function foo (){
-    console.log(arguments)
-    setTimeout(()=>{
-      console.log(arguments)
-    },100)
+  // function foo (){
+  //   console.log(arguments)
+  //   setTimeout(()=>{
+  //     console.log(arguments)
+  //   },100)
+  // }
+  // foo(2,4,5,7)
+  function isType(type){
+    return function(obj){
+      return Object.prototype.toString.call(obj)===`[object ${type}]`
+    }
   }
-  foo(2,4,5,7)
+  console.log(isType('Array')([1,2,3,4]))
 </script>
 <body>
   
