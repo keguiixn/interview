@@ -7,6 +7,15 @@
   <title>Document</title>
 </head>
 <script>
+  // function foo(i=0){
+  //   return  function(){
+  //     return i++
+  //   }
+  // }
+  // const  a = foo(1)
+  // console.log(a())
+  // console.log(a())
+  // console.log(a())
   // function abc({x,y}={x:0,y:0}){
   //   console.log(x,y)
   // }
@@ -27,12 +36,62 @@
   //   },100)
   // }
   // foo(2,4,5,7)
-  function isType(type){
-    return function(obj){
-      return Object.prototype.toString.call(obj)===`[object ${type}]`
+  // function isType(type){
+  //   return function(obj){
+  //     return Object.prototype.toString.call(obj)===`[object ${type}]`
+  //   }
+  // }
+  // console.log(isType('Array')([1,2,3,4]))
+  function throttle(fn,ms){
+    let timer = null
+    // if(timer){
+    //  clearTimeout(timer)
+    // }
+    return function(){
+      if(timer==null){
+        timer = setTimeout(()=>{
+          clearTimeout(timer)
+          timer=null
+          fn.call(this,arguments)
+        },ms)
+      }
+    }
+    // let pre = 0
+    // return ()=>{
+    //   const current = Date.now()
+    //   if(current-pre>ms){
+    //     fn.call(this,arguments)
+    //     pre=current
+    //   }
+    // }
+  }
+  function debounce(fn,ms){
+    let timer = null
+    return function(){
+      if(timer){
+        clearTimeout(timer)
+      }
+      timer = setTimeout(()=>{
+        fn.call(this,arguments)
+      },ms)
     }
   }
-  console.log(isType('Array')([1,2,3,4]))
+  function handle(){
+    console.log(1)
+  }
+  // window.onresize=function(){
+  //   throttle(handle,3000)
+  // }
+  // window.addEventListener('resize',throttle(handle,1000))
+  window.addEventListener('resize',debounce(handle,1000))
+  // let a =null
+  // a= setTimeout(()=>{
+  //  console.log(2) 
+  // },1000)
+  // console.log(a)
+  // clearTimeout(a)
+  // a=null
+  // console.log(a)
 </script>
 <body>
   

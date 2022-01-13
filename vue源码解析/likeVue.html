@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div id="root">
+    <div>
+      <p>{{name}}
+        <div>{{message}}</div>
+      </p>
+    </div>
+    <div>{{name}}</div>
+    <div>{{message}}</div>
+  </div>
+  <script>
+    let tmpNode = document.querySelectorAll('#root')
+    console.log(tmpNode)
+    let data = {
+      name:'aaa',
+      message:'这是个app'
+    }
+    // 1.拿到模板
+    // 2.拿到数据
+    // 3.将数据与模板结合，得到HTML，DOM元素
+    // 4.放到页面中
+
+    // let generateNode = tmpNode.cloneNode(true)
+    // 在现在这个例子中，template是dom元素，而在vue源码中是字符串模板->VNode->真正的DOM
+    function compiler(template,data){
+      let childrenNodes = template.childrenNodes
+      console.log(childrenNodes)
+      for(let i =0;i<childrenNodes.length;i++){
+        let type = childrenNodes[i].nodeType  // 1.元素节点 3.文本节点
+        if(type===3){
+          let txt = childrenNodes[i].nodeValue
+          txt.replace(/\{\{(.+?)\}\}/g,(content,groupName)=>{
+            return data[groupName.trim()]
+          })
+          childrenNodes[i].nodeValue = txt
+        }else if (type===1){
+          compiler(childrenNodes[i],data)
+        }
+      }
+    }
+    console.log(tmpNode)
+    compiler(tmpNode,data)
+    console.log(generateNode)
+  </script>
+</body>
+</html>
